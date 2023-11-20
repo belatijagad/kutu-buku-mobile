@@ -16,4 +16,4 @@
 ## Alur Pengintegrasian Web Service
 
 ## Berita Acara
-(Tautan Berita Acara)[https://docs.google.com/spreadsheets/d/18GQfyYNx_iN4UH1nmWpxSdw4dudi7gPD8o1Cf4D0Gj0/edit?usp=sharing]
+[Tautan Berita Acara](https://docs.google.com/spreadsheets/d/18GQfyYNx_iN4UH1nmWpxSdw4dudi7gPD8o1Cf4D0Gj0/edit?usp=sharing)
