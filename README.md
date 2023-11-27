@@ -8,6 +8,7 @@
 - Thifaalinno Fawwaz Abdi
 
 ## Deskripsi Aplikasi
+KutuBuku adalah sebuah website yang berfungsi sebagai perpustakaan digital. Pengguna dapat mencari, membaca ulasan, dan membuat daftar bacaan dari berbagai buku. Fitur utama situs ini meliputi pencarian buku, daftar membaca, dan kemampuan untuk menambahkan buku baru ke perpustakaan digital​.
 
 ## Daftar Modul yang Diimplementasikan
 - Halaman Utama
