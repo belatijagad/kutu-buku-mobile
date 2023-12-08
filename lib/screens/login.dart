@@ -17,6 +17,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Welcome Back!'),
+        backgroundColor: Colors.tealAccent,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -33,23 +34,28 @@ class _LoginPageState extends State<LoginPage> {
               obscureText: true,
               decoration: const InputDecoration(labelText: 'Password'),
             ),
-            // const SizedBox(height: 24.0),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     // Perform login logic (authentication check)
-            //     if (_performLogin()) {
-            //       // If successful, navigate to the home page
-            //       Navigator.pushReplacement(
-            //         context,
-            //         MaterialPageRoute(builder: (context) => const HomePage()),
-            //       );
-            //     } else {
-            //       // Show an error message or handle authentication failure
-            //       _showErrorDialog();
-            //     }
-            //   },
-            //   child: const Text('Login'),
-            // ),
+            const SizedBox(height: 24.0),
+            ElevatedButton(
+              onPressed: () {
+                // Perform login logic (authentication check)
+                if (_performLogin()) {
+                  // If successful, navigate to the home page
+                  Navigator.pushReplacement(
+                    context,
+// DUMMY ROUTING: navigate ke LoginPage
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                  );
+                } else {
+                  // Show an error message or handle authentication failure
+                  _showErrorDialog();
+                }
+              },
+              child: const Text('Login'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal,
+                foregroundColor: Colors.white,
+              ),
+            ),
             const SizedBox(height: 12.0),
             TextButton(
               onPressed: () {
@@ -60,7 +66,11 @@ class _LoginPageState extends State<LoginPage> {
                       builder: (context) => ReaderRegistrationPage()),
                 );
               },
-              child: const Text('Register'),
+              child: const Text('Belum punya akun?',
+              style: TextStyle(
+                decoration: TextDecoration.underline,
+                ),
+              ),
             ),
           ],
         ),
