@@ -11,6 +11,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -19,62 +20,118 @@ class _LoginPageState extends State<LoginPage> {
         title: const Text('Welcome Back!'),
         backgroundColor: Colors.tealAccent,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(labelText: 'Username'),
-            ),
-            const SizedBox(height: 16.0),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: 'Password'),
-            ),
-            const SizedBox(height: 24.0),
-            ElevatedButton(
-              onPressed: () {
-                // Perform login logic (authentication check)
-                if (_performLogin()) {
-                  // If successful, navigate to the home page
-                  Navigator.pushReplacement(
-                    context,
-// DUMMY ROUTING: navigate ke LoginPage
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
-                  );
-                } else {
-                  // Show an error message or handle authentication failure
-                  _showErrorDialog();
-                }
-              },
-              child: const Text('Login'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal,
-                foregroundColor: Colors.white,
+      body: Form(
+        // padding: const EdgeInsets.all(16.0),
+        key: _formKey,
+        child: SizedBox(
+          // width: size.width,
+          // height: size.height,
+          child: Align (
+            alignment: Alignment.center,
+            child: Container(
+              // width: size.width * 0.85,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+              decoration: BoxDecoration(
+                color: Colors.white,
               ),
-            ),
-            const SizedBox(height: 12.0),
-            TextButton(
-              onPressed: () {
-                // Navigate to the registration page
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ReaderRegistrationPage()),
-                );
-              },
-              child: const Text('Belum punya akun?',
-              style: TextStyle(
-                decoration: TextDecoration.underline,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Center(
+                          child: Text(
+                            "Register",
+                            style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                    SizedBox(height: 30),
+                    TextFormField(
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter some text';
+                        }
+                        return null;
+                      },
+                      controller: _usernameController,
+                      decoration: InputDecoration(
+                        labelText: 'Username',
+                        hintText: 'Masukkan username',
+                        isDense: true,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16.0),
+                    TextFormField(
+                      obscureText: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Password invalid';
+                        }
+                        return null;
+                      },
+                      controller: _passwordController,
+                      keyboardType: TextInputType.visiblePassword,
+                      decoration: InputDecoration(
+                        labelText: 'Kata sandi',
+                        hintText: 'Masukkan kata sandi',
+                        isDense: true,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Perform login logic (authentication check)
+                        if (_performLogin()) {
+                          // If successful, navigate to the home page
+                          Navigator.pushReplacement(
+                            context,
+                            // DUMMY ROUTING: navigate ke LoginPage (harusnya ke HomePage())
+                            MaterialPageRoute(builder: (context) => const LoginPage()),
+                          );
+                        } else {
+                          // Show an error message or handle authentication failure
+                          _showErrorDialog();
+                        }
+                      },
+                      child: const Text('Login'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.teal,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 12.0),
+                    TextButton(
+                      onPressed: () {
+                        // Navigate to the registration page
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ReaderRegistrationPage()),
+                        );
+                      },
+                      child: const Text('Belum punya akun?',
+                      style: TextStyle(
+                        color: Colors.blue,
+                        decoration: TextDecoration.underline,
+                        decorationColor: Colors.blue,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ],
+          ),
         ),
-      ),
+      )
     );
   }
 
@@ -89,12 +146,12 @@ class _LoginPageState extends State<LoginPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Login Failed'),
-        content: Text('Invalid username or password. Please try again.'),
+        title: Text('Gagal masuk'),
+        content: Text('Username atau kata sandi tidak valid.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('OK'),
+            child: Text('Ok'),
           ),
         ],
       ),
