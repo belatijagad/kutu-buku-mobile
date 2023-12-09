@@ -13,40 +13,40 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+  bool _passwordVisible = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Welcome Back!'),
+        title: const Text('Login'),
         backgroundColor: Colors.tealAccent,
       ),
       body: Form(
-        // padding: const EdgeInsets.all(16.0),
         key: _formKey,
         child: SizedBox(
-          // width: size.width,
-          // height: size.height,
           child: Align (
             alignment: Alignment.center,
             child: Container(
-              // width: size.width * 0.85,
+              margin: EdgeInsets.all(50),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
               decoration: BoxDecoration(
                 color: Colors.white,
+                // borderRadius: BorderRadius.circular(10)
               ),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Center(
-                          child: Text(
-                            "Register",
-                            style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                      child: Text(
+                        "Welcome Back!",
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
                         ),
+                      ),
+                    ),
                     SizedBox(height: 30),
                     TextFormField(
                       validator: (value) {
@@ -57,17 +57,20 @@ class _LoginPageState extends State<LoginPage> {
                       },
                       controller: _usernameController,
                       decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.teal.shade50,
                         labelText: 'Username',
                         hintText: 'Masukkan username',
                         isDense: true,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide(color: Colors.white, width: 0.0),
                         ),
                       ),
                     ),
                     const SizedBox(height: 16.0),
                     TextFormField(
-                      obscureText: true,
+                      obscureText: !_passwordVisible,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Password invalid';
@@ -77,11 +80,25 @@ class _LoginPageState extends State<LoginPage> {
                       controller: _passwordController,
                       keyboardType: TextInputType.visiblePassword,
                       decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.teal.shade50,
                         labelText: 'Kata sandi',
                         hintText: 'Masukkan kata sandi',
                         isDense: true,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide(color: Colors.white)
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(!_passwordVisible ? Icons.visibility
+                              : Icons.visibility_off),
+                          onPressed: () {
+                            setState(
+                              () {
+                                _passwordVisible = !_passwordVisible;
+                              },
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -131,7 +148,32 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
         ),
-      )
+      ),
+      bottomNavigationBar: Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              icon: Icon(Icons.home),
+              onPressed: () {
+                // navigate to home page
+              },
+            ),
+            Text(
+              'Copyright © PBP B10 2023',
+              style: TextStyle(fontSize: 14.0),
+            ),
+            IconButton(
+              icon: Icon(Icons.info),
+              onPressed: () {
+                // navigate to about page
+              },
+            ),
+          ],
+        ),
+        height: 50.0,
+        color: Colors.tealAccent,
+      ),
     );
   }
 
