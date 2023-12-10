@@ -21,7 +21,11 @@ class _ReaderRegistrationPageState extends State<ReaderRegistrationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register'),
+        title: Image.asset(
+          "images/kutubuku1.png",
+          width: 140,
+          height: 90,
+          ),
         backgroundColor: Colors.tealAccent,
       ),
       body: Form(
@@ -46,9 +50,18 @@ class _ReaderRegistrationPageState extends State<ReaderRegistrationPage> {
                     children: [
                       const Center(
                         child: Text(
-                          "Welcome!",
+                          "Welcome!", // Teks baru ditambahkan di sini
                           style: TextStyle(
-                            fontSize: 30,
+                            fontSize: 30, // Atur ukuran font sesuai kebutuhan
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const Center(
+                        child: Text(
+                          "Register",
+                          style: TextStyle(
+                            fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -186,31 +199,39 @@ class _ReaderRegistrationPageState extends State<ReaderRegistrationPage> {
                 ),
               ),
             ),
-          )),
+          )
+        ),
       bottomNavigationBar: Container(
+        height: 50.0,
+        color: Colors.tealAccent,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            IconButton(
-              icon: Icon(Icons.home),
-              onPressed: () {
+            Expanded(
+              child: IconButton(
+                icon: Icon(Icons.home),
+                onPressed: () {
                 // navigate to home page
               },
             ),
-            Text(
-              'Copyright © PBP B10 2023',
-              style: TextStyle(fontSize: 14.0),
             ),
-            IconButton(
-              icon: Icon(Icons.info),
-              onPressed: () {
+            Expanded(
+              child: Text(
+                'Copyright © PBP B10 2023',
+                style: TextStyle(fontSize: 14.0),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Expanded(
+              child: IconButton(
+                icon: Icon(Icons.info),
+                onPressed: () {
                 // navigate to about page
-              },
+                },
+              ),
             ),
           ],
         ),
-        height: 50.0,
-        color: Colors.tealAccent,
       ),
     );
   }

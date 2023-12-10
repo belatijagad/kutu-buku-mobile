@@ -17,7 +17,6 @@ import 'package:kutubuku/screens/login.dart';
 //       ),
 //     );
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -39,4 +38,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

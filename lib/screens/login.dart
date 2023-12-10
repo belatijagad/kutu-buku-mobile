@@ -19,7 +19,11 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        title: Image.asset(
+          "images/kutubuku1.png",
+          width: 140,
+          height: 90,
+          ),
         backgroundColor: Colors.tealAccent,
       ),
       body: Form(
@@ -27,8 +31,9 @@ class _LoginPageState extends State<LoginPage> {
         child: SizedBox(
           child: Align (
             alignment: Alignment.center,
+            
             child: Container(
-              margin: EdgeInsets.all(50),
+              margin: EdgeInsets.all(40),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -40,7 +45,16 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     const Center(
                       child: Text(
-                        "Welcome Back!",
+                        "Welcome Back!", // Teks baru ditambahkan di sini
+                        style: TextStyle(
+                          fontSize: 24, // Atur ukuran font sesuai kebutuhan
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const Center(
+                      child: Text(
+                        "Login",
                         style: TextStyle(
                           fontSize: 30,
                           fontWeight: FontWeight.bold,
@@ -150,29 +164,36 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
       bottomNavigationBar: Container(
+        height: 50.0,
+        color: Colors.tealAccent,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            IconButton(
-              icon: Icon(Icons.home),
-              onPressed: () {
+            Expanded(
+              child: IconButton(
+                icon: Icon(Icons.home),
+                onPressed: () {
                 // navigate to home page
               },
             ),
-            Text(
-              'Copyright © PBP B10 2023',
-              style: TextStyle(fontSize: 14.0),
             ),
-            IconButton(
-              icon: Icon(Icons.info),
-              onPressed: () {
+            Expanded(
+              child: Text(
+                'Copyright © PBP B10 2023',
+                style: TextStyle(fontSize: 14.0),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Expanded(
+              child: IconButton(
+                icon: Icon(Icons.info),
+                onPressed: () {
                 // navigate to about page
-              },
+                },
+              ),
             ),
           ],
         ),
-        height: 50.0,
-        color: Colors.tealAccent,
       ),
     );
   }
