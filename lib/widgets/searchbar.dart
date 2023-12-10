@@ -20,17 +20,20 @@ class SearchBarWidget extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: horizontalMargin),
       child: Container(
-        padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+        padding: EdgeInsets.all(16.0),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(25),
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               'Mau baca buku apa hari ini?',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 24, 
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Montserrat'),
+              textAlign: TextAlign.center,
             ),
             SizedBox(height: 8),
             Row(
@@ -49,40 +52,51 @@ class SearchBarWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(width: 8),
-                DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: selectedGenre,
-                    icon: Icon(Icons.arrow_drop_down),
-                    onChanged: onGenreChanged,
-                    items: ['Genre', 'Action', 'Drama', 'Romance']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
-                ),
-                SizedBox(width: 8),
-                DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: selectedRating,
-                    icon: Icon(Icons.arrow_drop_down),
-                    onChanged: onRatingChanged,
-                    items: ['Rating tertinggi', 'Terpopuler', 'Terbaru']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
-                ),
                 IconButton(
                   icon: Icon(Icons.sort),
                   onPressed: () {
                   },
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Dropdown for Rating
+                Expanded(
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: selectedRating,
+                      icon: Icon(Icons.arrow_drop_down),
+                      onChanged: onRatingChanged,
+                      items: ['Rating tertinggi', 'Terpopuler', 'Terbaru']
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8),
+                // Dropdown for Genre
+                Expanded(
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: selectedGenre,
+                      icon: Icon(Icons.arrow_drop_down),
+                      onChanged: onGenreChanged,
+                      items: ['Genre', 'Action', 'Drama', 'Romance']
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                  ),
                 ),
               ],
             ),

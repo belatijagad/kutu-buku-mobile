@@ -55,6 +55,12 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/kutubuku1.png
+  fonts:
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat-Regular.ttf
+        - asset: assets/fonts/Montserrat-Bold.ttf
+          weight: 700
 
 
   # The following line ensures that the Material Icons font is
