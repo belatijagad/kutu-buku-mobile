@@ -14,4 +14,7 @@ void main() => runApp(
           // '/register': (context) => Register(),
         },
       ),
+      home: SearchBookScreen(),
     );
+  }
+}
