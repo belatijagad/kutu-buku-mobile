@@ -4,7 +4,19 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final TextEditingController bookNameController = TextEditingController();
+  final TextEditingController genreController = TextEditingController();
+  final TextEditingController pageCountController = TextEditingController();
+  final TextEditingController coverLinkController = TextEditingController();
+  final TextEditingController synopsisController = TextEditingController();
+  bool termsAccepted = false;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -16,13 +28,8 @@ class MyApp extends StatelessWidget {
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              // Bagian Atas
               _buildTopBar(),
-
-              // Bagian Tambah Buku
               _buildAddBookSection(),
-
-              // Bagian Footer
               _buildFooterSection(),
             ],
           ),
@@ -54,19 +61,20 @@ class MyApp extends StatelessWidget {
             ),
           ),
           SizedBox(height: 32),
-          _buildTextField('Nama buku', 'Masukkan nama buku di sini'),
-          _buildTextField('Genre buku', 'Masukkan genre buku di sini'),
-          _buildTextField('Jumlah halaman buku', 'Masukkan jumlah halaman di sini'),
-          _buildTextField('Link cover buku', 'Masukkan link menuju gambar cover di sini'),
-          _buildTextField('Sinopsis buku', 'Masukkan sinopsis buku di sini', maxLines: 10),
+          _buildTextField(bookNameController, 'Nama buku', 'Masukkan nama buku di sini'),
+          _buildTextField(genreController, 'Genre buku', 'Masukkan genre buku di sini'),
+          _buildTextField(pageCountController, 'Jumlah halaman buku', 'Masukkan jumlah halaman di sini'),
+          _buildTextField(coverLinkController, 'Link cover buku', 'Masukkan link menuju gambar cover di sini'),
+          _buildTextField(synopsisController, 'Sinopsis buku', 'Masukkan sinopsis buku di sini', maxLines: 10),
           SizedBox(height: 16),
-          // Checkbox
           Row(
             children: <Widget>[
               Checkbox(
-                value: false,
+                value: termsAccepted,
                 onChanged: (bool? value) {
-                  // Handle Checkbox Change
+                  setState(() {
+                    termsAccepted = value ?? false;
+                  });
                 },
               ),
               Expanded(
@@ -82,11 +90,13 @@ class MyApp extends StatelessWidget {
             ],
           ),
           SizedBox(height: 16),
-          // Publish Button
           Center(
             child: ElevatedButton(
               onPressed: () {
-                // Handle Publish Logic
+                if (termsAccepted) {
+                  // Handle Publish Logic
+                }
+                // Handle validation or show error
               },
               child: Text(
                 'Terbitkan buku',
@@ -116,7 +126,7 @@ class MyApp extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(String label, String placeholder, {int maxLines = 1}) {
+  Widget _buildTextField(TextEditingController controller, String label, String placeholder, {int maxLines = 1}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -131,6 +141,7 @@ class MyApp extends StatelessWidget {
         ),
         SizedBox(height: 8),
         TextField(
+          controller: controller,
           maxLines: maxLines,
           decoration: InputDecoration(
             border: OutlineInputBorder(
