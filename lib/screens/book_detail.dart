@@ -1,13 +1,15 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 
-class BookDetailPage extends StatefulWidget {
-  const BookDetailPage({Key? key}) : super(key: key);
+class DetailScreen extends StatefulWidget {
+  const DetailScreen({Key? key}) : super(key: key);
 
   @override
-  _BookDetailPageState createState() => _BookDetailPageState();
+  _DetailScreenState createState() => _DetailScreenState();
 }
 
-class _BookDetailPageState extends State<BookDetailPage> {
+class _DetailScreenState extends State<DetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,28 +60,28 @@ class _BookDetailPageState extends State<BookDetailPage> {
                                 ),
                               ),
                             ),
-                            Text(
+                            const Text(
                               'Kimi no Na wa. (2016)',
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Text('Makoto Shinkai'),
+                            const Text('Makoto Shinkai'),
                             DecoratedBox(
                               decoration: BoxDecoration(
                                 border: Border.all(color: Colors.teal),
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
+                              child: const Padding(
+                                padding: EdgeInsets.all(8.0),
                                 child: Text(
                                   'Romance',
                                   style: TextStyle(color: Colors.teal),
                                 ),
                               ),
                             ),
-                            Text(
+                            const Text(
                               'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
                             ),
                             Padding(
@@ -89,8 +91,8 @@ class _BookDetailPageState extends State<BookDetailPage> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(8.0),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -118,7 +120,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
@@ -130,9 +132,9 @@ class _BookDetailPageState extends State<BookDetailPage> {
                           ),
                         ],
                       ),
-                      Row(
+                      const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: [StarRating()]),
+                          children: [Rating()]),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -168,12 +170,12 @@ class _BookDetailPageState extends State<BookDetailPage> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.teal.shade100,
                               ),
-                              child: Text('Kirim ulasan'),
+                              child: const Text('Kirim ulasan'),
                             ),
                           ),
                         ],
                       ),
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
@@ -188,29 +190,29 @@ class _BookDetailPageState extends State<BookDetailPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
+                          const Padding(
+                            padding: EdgeInsets.only(right: 8.0),
                             child: Text('Urutkan berdasarkan'),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(right: 8.0),
                             child: DropdownButton(
                               value: 'Reputasi',
-                              items: [
+                              items: const [
                                 DropdownMenuItem(
-                                  child: Text('Reputasi'),
                                   value: 'Reputasi',
+                                  child: Text('Reputasi'),
                                 ),
                                 DropdownMenuItem(
-                                  child: Text('Tanggal Terbaru'),
                                   value: 'Tanggal Terbaru',
+                                  child: Text('Tanggal Terbaru'),
                                 ),
                               ],
                               onChanged: (value) {},
                             ),
                           ),
                           FloatingActionButton(
-                            child: Icon(Icons.arrow_downward_rounded),
+                            child: const Icon(Icons.arrow_downward_rounded),
                             onPressed: () {},
                           ),
                         ],
@@ -219,11 +221,11 @@ class _BookDetailPageState extends State<BookDetailPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
-                            padding: EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(16.0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10.0),
                               color: Colors.white,
-                              boxShadow: [
+                              boxShadow: const [
                                 BoxShadow(
                                   color: Colors.black12,
                                   offset: Offset(0.0, 2.0),
@@ -231,7 +233,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                                 ),
                               ],
                             ),
-                            child: Column(
+                            child: const Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
@@ -280,12 +282,14 @@ class _BookDetailPageState extends State<BookDetailPage> {
   }
 }
 
-class StarRating extends StatefulWidget {
+class Rating extends StatefulWidget {
+  const Rating({super.key});
+
   @override
-  _StarRatingState createState() => _StarRatingState();
+  _RatingState createState() => _RatingState();
 }
 
-class _StarRatingState extends State<StarRating> {
+class _RatingState extends State<Rating> {
   int rating = 0;
 
   @override

@@ -36,6 +36,8 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   ionicons: ^0.2.2
+  provider: ^6.1.1
+  pbp_django_auth: ^0.4.0
 
 dev_dependencies:
   flutter_test:
@@ -55,7 +57,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/images/kutubuku1.png
+    - images/kutubuku1.png
+    - assets/images/Book Vector.png
+    - assets/images/Frame 33.png
   fonts:
     - family: Montserrat
       fonts:
@@ -69,10 +73,6 @@ flutter:
   # the material Icons class.
 
   # To add assets to your application, add an assets section, like this:
-  assets:
-    - images/kutubuku1.png
-    - assets/images/Book Vector.png
-    - assets/images/Frame 33.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
