@@ -4,12 +4,15 @@ import 'package:flutter/material.dart';
 
 import 'package:kutubuku/screens/register.dart';
 import 'package:kutubuku/utils/constants.dart';
+import 'package:kutubuku/utils/user_preferences.dart';
 
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final Function? onLogin;
+
+  const LoginScreen({super.key, this.onLogin});
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -125,14 +128,17 @@ class _LoginPageState extends State<LoginScreen> {
                           'username': username,
                           'password': password,
                         });
-                        // print(response);
 
                         if (request.loggedIn) {
-                          Navigator.pushReplacementNamed(context, '/landing');
+                          widget.onLogin!();
+                          UserPreferences.saveUsername(username);
                           ScaffoldMessenger.of(context)
                             ..hideCurrentSnackBar()
                             ..showSnackBar(
-                                SnackBar(content: Text("Selamat datang.")));
+                              const SnackBar(
+                                content: Text("Selamat datang."),
+                              ),
+                            );
                         } else {
                           showDialog(
                             context: context,
@@ -182,22 +188,6 @@ class _LoginPageState extends State<LoginScreen> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  void _showErrorDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Gagal masuk'),
-        content: const Text('Username atau kata sandi tidak valid.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Ok'),
-          ),
-        ],
       ),
     );
   }

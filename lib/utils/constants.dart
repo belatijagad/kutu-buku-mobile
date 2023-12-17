@@ -9,6 +9,10 @@ class Constants {
   static const String searchBooks = '$baseUrl/search/';
   static const String getGenres = '$baseUrl/get_genres/';
 
+  static String getUser(String username) {
+    return '$baseUrl/user/$username';
+  }
+
   static String getBook(int id) {
     return '$baseUrl/books/$id/';
   }

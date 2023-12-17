@@ -1,5 +1,3 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +6,7 @@ import 'package:kutubuku/screens/landing.dart';
 import 'package:kutubuku/screens/register.dart';
 import 'package:kutubuku/screens/login.dart';
 import 'package:kutubuku/screens/searchbook.dart';
+import 'package:kutubuku/screens/profile.dart';
 
 void main() => runApp(const MyApp());
 
@@ -45,33 +44,34 @@ class _BaseScreenState extends State<BaseScreen> {
   int _selectedIndex = 0;
   bool _isLoggedIn = false;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _checkLoginStatus();
-  // }
-
-  Future<void> _checkLoginStatus() async {
-    final request = context.watch<CookieRequest>();
-    final loggedIn = request.loggedIn;
+  void _handleLogin() {
     setState(() {
-      _isLoggedIn = loggedIn;
+      _isLoggedIn = true;
+      _selectedIndex = 0;
     });
   }
 
-  final List<Widget> _screens = [
-    const Landing(),
-    const SearchScreen(),
-    const LoginScreen(),
-    // const ProfileScreen(),
-  ];
+  void _handleLogout() {
+    setState(() {
+      _isLoggedIn = false;
+      _selectedIndex = 0;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> screens = [
+      const Landing(),
+      const SearchScreen(),
+      _isLoggedIn
+          ? ProfileScreen(onLogout: _handleLogout)
+          : LoginScreen(onLogin: _handleLogin),
+      // const ProfileScreen(),
+    ];
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
-        children: _screens,
+        children: screens,
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
@@ -92,9 +92,11 @@ class _BaseScreenState extends State<BaseScreen> {
         ],
         currentIndex: _selectedIndex,
         onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
+          setState(
+            () {
+              _selectedIndex = index;
+            },
+          );
         },
       ),
     );
