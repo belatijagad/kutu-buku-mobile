@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:kutubuku/screens/edit_profile.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
-
 import 'package:kutubuku/screens/landing.dart';
 import 'package:kutubuku/screens/register.dart';
 import 'package:kutubuku/screens/login.dart';
@@ -12,7 +12,7 @@ void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
+  
   @override
   Widget build(BuildContext context) {
     return Provider(
@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/landing': (context) => const BaseScreen(screen: Landing()),
           '/register': (context) => const BaseScreen(screen: RegisterScreen()),
+          '/edit_profile': (context) => const BaseScreen(screen: EditProfile()),
           '/login': (context) => const BaseScreen(screen: LoginScreen()),
           '/search': (context) => const BaseScreen(screen: SearchScreen()),
           // '/profile'
