@@ -179,7 +179,7 @@ class _EditProfileState extends State<EditProfile> {
                         backgroundColor: Colors.teal,
                         foregroundColor: Colors.white,
                       ),
-                      child: const Text('Register'),
+                      child: const Text('Change Password'),
                     ),
                   ],
                 ),
