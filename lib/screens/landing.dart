@@ -12,43 +12,6 @@ class _MyWidgetState extends State<Landing> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFC2F4E3),
-      // appBar: AppBar(
-      //   actions: [
-      //     Row(
-      //       children: [
-      //         Image.asset(
-      //           "assets/images/Frame 33.png",
-      //           width: 40,
-      //           height: 40,
-      //         ),
-      //         const SizedBox(
-      //           width: 90,
-      //         ),
-      //         const Text("Daftar Membaca"),
-      //         const SizedBox(
-      //           width: 30,
-      //         ),
-      //         const Text("Cari Buku"),
-      //         const SizedBox(
-      //           width: 30,
-      //         ),
-      //         GestureDetector(
-      //           child: Container(
-      //             decoration: BoxDecoration(
-      //                 color: const Color(0xFF3BEDB7),
-      //                 borderRadius: BorderRadius.circular(16)),
-      //             padding:
-      //                 const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-      //             child: const Text("Log out"),
-      //           ),
-      //         ),
-      //         const SizedBox(
-      //           width: 30,
-      //         ),
-      //       ],
-      //     )
-      //   ],
-      // ),
       drawer: const Drawer(),
       body: Center(
         child: Column(

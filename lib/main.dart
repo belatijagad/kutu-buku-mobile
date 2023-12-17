@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +9,7 @@ import 'package:kutubuku/screens/register.dart';
 import 'package:kutubuku/screens/login.dart';
 import 'package:kutubuku/screens/searchbook.dart';
 import 'package:kutubuku/screens/profile.dart';
+import 'package:kutubuku/screens/edit_profile.dart';
 
 void main() => runApp(const MyApp());
 
@@ -24,7 +27,7 @@ class MyApp extends StatelessWidget {
           '/register': (context) => const BaseScreen(screen: RegisterScreen()),
           '/login': (context) => const BaseScreen(screen: LoginScreen()),
           '/search': (context) => const BaseScreen(screen: SearchScreen()),
-          // '/profile'
+          '/edit_profile': (context) => const BaseScreen(screen: EditProfile()),
         },
       ),
     );
@@ -44,29 +47,28 @@ class _BaseScreenState extends State<BaseScreen> {
   int _selectedIndex = 0;
   bool _isLoggedIn = false;
 
-  void _handleLogin() {
-    setState(() {
-      _isLoggedIn = true;
-      _selectedIndex = 0;
-    });
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _checkLoginStatus();
+  // }
 
-  void _handleLogout() {
+  Future<void> _checkLoginStatus() async {
+    final request = context.watch<CookieRequest>();
+    final loggedIn = request.loggedIn;
     setState(() {
-      _isLoggedIn = false;
-      _selectedIndex = 0;
+      _isLoggedIn = loggedIn;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    _checkLoginStatus();
     final List<Widget> screens = [
       const Landing(),
       const SearchScreen(),
-      _isLoggedIn
-          ? ProfileScreen(onLogout: _handleLogout)
-          : LoginScreen(onLogin: _handleLogin),
-      // const ProfileScreen(),
+      if (!_isLoggedIn) const LoginScreen(),
+      if (_isLoggedIn) const ProfileScreen(),
     ];
     return Scaffold(
       body: IndexedStack(
@@ -83,20 +85,22 @@ class _BaseScreenState extends State<BaseScreen> {
             icon: Icon(Icons.search),
             label: 'Search',
           ),
-          BottomNavigationBarItem(
-            icon: _isLoggedIn
-                ? const Icon(Icons.person)
-                : const Icon(Icons.login),
-            label: _isLoggedIn ? 'Profile' : 'Login',
-          ),
+          if (!_isLoggedIn)
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.login),
+              label: 'Login',
+            ),
+          if (_isLoggedIn)
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
         ],
         currentIndex: _selectedIndex,
         onTap: (index) {
-          setState(
-            () {
-              _selectedIndex = index;
-            },
-          );
+          setState(() {
+            _selectedIndex = index;
+          });
         },
       ),
     );
