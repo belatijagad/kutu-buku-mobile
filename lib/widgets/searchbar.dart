@@ -1,48 +1,60 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 class SearchBarWidget extends StatelessWidget {
-  final double horizontalMargin;
   final String selectedGenre;
   final String selectedRating;
+  final List<String> genres;
   final Function(String?) onGenreChanged;
   final Function(String?) onRatingChanged;
+  final Function(String) onSearchChanged;
+  final Function() toggleSort;
+  final bool descending;
 
-  SearchBarWidget({
-    required this.horizontalMargin,
+  final TextEditingController searchController;
+
+  const SearchBarWidget({
+    super.key,
     required this.selectedGenre,
     required this.selectedRating,
+    required this.genres,
     required this.onGenreChanged,
     required this.onRatingChanged,
+    required this.onSearchChanged,
+    required this.searchController,
+    required this.toggleSort,
+    required this.descending,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: horizontalMargin),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Container(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(25),
         ),
         child: Column(
           children: [
-            Text(
+            const Text(
               'Mau baca buku apa hari ini?',
               style: TextStyle(
-                fontSize: 24, 
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Montserrat'),
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Montserrat'),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Row(
               children: [
                 Expanded(
                   child: TextField(
+                    controller: searchController,
                     decoration: InputDecoration(
                       hintText: 'Cari buku di sini!',
-                      prefixIcon: Icon(Icons.search),
+                      prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(45),
                         borderSide: BorderSide.none,
@@ -50,16 +62,23 @@ class SearchBarWidget extends StatelessWidget {
                       filled: true,
                       fillColor: Colors.grey[200],
                     ),
+                    // onSubmitted: onSearch,
+                    onChanged: onSearchChanged,
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.sort),
-                  onPressed: () {
-                  },
+                  icon: Transform(
+                    alignment: Alignment.center,
+                    transform: descending
+                        ? Matrix4.rotationX(0)
+                        : Matrix4.rotationX(pi),
+                    child: const Icon(Icons.sort),
+                  ),
+                  onPressed: toggleSort,
                 ),
               ],
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -68,9 +87,9 @@ class SearchBarWidget extends StatelessWidget {
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
                       value: selectedRating,
-                      icon: Icon(Icons.arrow_drop_down),
+                      icon: const Icon(Icons.arrow_drop_down),
                       onChanged: onRatingChanged,
-                      items: ['Rating tertinggi', 'Terpopuler', 'Terbaru']
+                      items: ['Terpopuler', 'Rating Tertinggi', 'Terbaru']
                           .map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
@@ -80,16 +99,16 @@ class SearchBarWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 // Dropdown for Genre
                 Expanded(
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
                       value: selectedGenre,
-                      icon: Icon(Icons.arrow_drop_down),
+                      icon: const Icon(Icons.arrow_drop_down),
                       onChanged: onGenreChanged,
-                      items: ['Genre', 'Action', 'Drama', 'Romance']
-                          .map<DropdownMenuItem<String>>((String value) {
+                      items:
+                          genres.map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),

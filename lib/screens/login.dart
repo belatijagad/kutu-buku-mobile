@@ -1,7 +1,12 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+
 import 'package:kutubuku/screens/register.dart';
+import 'package:kutubuku/utils/constants.dart';
+
+import 'package:provider/provider.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,6 +24,7 @@ class _LoginPageState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
     return Scaffold(
       body: Form(
         key: _formKey,
@@ -111,18 +117,38 @@ class _LoginPageState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 24.0),
                     ElevatedButton(
-                      onPressed: () {
-                        // Perform login logic (authentication check)
-                        if (_performLogin()) {
-                          // If successful, navigate to the home page
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const LoginScreen()),
-                          );
+                      onPressed: () async {
+                        String username = _usernameController.text;
+                        String password = _passwordController.text;
+
+                        final response = await request.login(Constants.login, {
+                          'username': username,
+                          'password': password,
+                        });
+                        // print(response);
+
+                        if (request.loggedIn) {
+                          Navigator.pushReplacementNamed(context, '/landing');
+                          ScaffoldMessenger.of(context)
+                            ..hideCurrentSnackBar()
+                            ..showSnackBar(
+                                SnackBar(content: Text("Selamat datang.")));
                         } else {
-                          // Show an error message or handle authentication failure
-                          _showErrorDialog();
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Login Gagal'),
+                              content: Text(response['message']),
+                              actions: [
+                                TextButton(
+                                  child: const Text('OK'),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -158,11 +184,6 @@ class _LoginPageState extends State<LoginScreen> {
         ),
       ),
     );
-  }
-
-  bool _performLogin() {
-    return _usernameController.text.isNotEmpty &&
-        _passwordController.text.isNotEmpty;
   }
 
   void _showErrorDialog() {

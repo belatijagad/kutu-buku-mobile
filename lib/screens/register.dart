@@ -1,6 +1,12 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:kutubuku/utils/constants.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -21,6 +27,7 @@ class _RegisterState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
     return Scaffold(
       body: Form(
         // padding: const EdgeInsets.all(16.0),
@@ -157,7 +164,7 @@ class _RegisterState extends State<RegisterScreen> {
                       onPressed: () {
                         // Perform registration logic
                         if (_fieldsIsNotEmpty()) {
-                          _performRegistration(context);
+                          _performRegistration(context, request);
                         } else {
                           _showErrorDialog(
                               'Username atau kata sandi tidak valid. Coba lagi.');
@@ -199,13 +206,36 @@ class _RegisterState extends State<RegisterScreen> {
         _passwordController.text.isNotEmpty;
   }
 
-  void _performRegistration(BuildContext context) {
+  void _performRegistration(BuildContext context, request) async {
     if (_passwordController.text != _confirmPasswordController.text) {
       _showErrorDialog('Konfirmasi kata sandi tidak cocok');
     } else {
-      // Logic pendaftaran
-      // print('Registration logic here');
-      Navigator.pop(context);
+      String username = _usernameController.text;
+      String password = _passwordController.text;
+      try {
+        final response = await http.post(
+          Uri.parse(Constants.register),
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: {
+            'username': username,
+            'password': password,
+          },
+        );
+
+        if (response.statusCode == 201) {
+          // Handle successful registration
+          Navigator.pop(context);
+        } else {
+          // Handle error
+          print('Registration failed: ${response.body}');
+          _showErrorDialog('Username dengan nama ini sudah ada!');
+        }
+      } catch (e) {
+        // Handle network error or other exceptions
+        print('Registration error: $e');
+      }
     }
   }
 

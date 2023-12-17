@@ -59,9 +59,9 @@ class _MyWidgetState extends State<Landing> {
               width: 300,
               height: 300,
             ),
-            Container(
+            const SizedBox(
               width: 300,
-              child: const Text(
+              child: Text(
                 "Cari, Ulas\n Buku, dan Buat\n Daftar Bacamu",
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),

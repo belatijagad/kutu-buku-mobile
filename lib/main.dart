@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
           '/register': (context) => const BaseScreen(screen: RegisterScreen()),
           '/login': (context) => const BaseScreen(screen: LoginScreen()),
           '/search': (context) => const BaseScreen(screen: SearchScreen()),
+          // '/profile'
         },
       ),
     );
@@ -42,11 +43,27 @@ class BaseScreen extends StatefulWidget {
 
 class _BaseScreenState extends State<BaseScreen> {
   int _selectedIndex = 0;
+  bool _isLoggedIn = false;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _checkLoginStatus();
+  // }
+
+  Future<void> _checkLoginStatus() async {
+    final request = context.watch<CookieRequest>();
+    final loggedIn = request.loggedIn;
+    setState(() {
+      _isLoggedIn = loggedIn;
+    });
+  }
 
   final List<Widget> _screens = [
     const Landing(),
     const SearchScreen(),
     const LoginScreen(),
+    // const ProfileScreen(),
   ];
 
   @override
@@ -57,18 +74,20 @@ class _BaseScreenState extends State<BaseScreen> {
         children: _screens,
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
+        items: <BottomNavigationBarItem>[
+          const BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.search),
             label: 'Search',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.login),
-            label: 'Login',
+            icon: _isLoggedIn
+                ? const Icon(Icons.person)
+                : const Icon(Icons.login),
+            label: _isLoggedIn ? 'Profile' : 'Login',
           ),
         ],
         currentIndex: _selectedIndex,
