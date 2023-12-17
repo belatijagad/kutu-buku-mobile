@@ -1,24 +1,22 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:kutubuku/utils/constants.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class EditProfile extends StatefulWidget {
+  const EditProfile({super.key});
 
   @override
-  _RegisterState createState() => _RegisterState();
+  _EditProfileState createState() => _EditProfileState();
 }
 
-class _RegisterState extends State<RegisterScreen> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+class _EditProfileState extends State<EditProfile> {
+  final TextEditingController _oldPassword = TextEditingController();
+  final TextEditingController _newPassword = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  String _username = "";
 
   bool _passwordVisible = false;
   bool _confirmPasswordVisible = false;
@@ -26,6 +24,47 @@ class _RegisterState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
+
+    Future<dynamic> getUser() async {
+      final response = await request.get(Constants.getUser);
+      return response;
+    }
+
+    getUser().then((value) => {
+          setState(() {
+            _username = value['username'];
+          })
+        });
+
+    void performPasswordChange(BuildContext context, request) async {
+      if (_oldPassword.text == _newPassword.text) {
+        _showErrorDialog('Kata sandi baru tidak boleh sama dengan yang lama!');
+      } else {
+        String oldpassword = _oldPassword.text;
+        String newpassword = _newPassword.text;
+        try {
+          final response = await request.post(Constants.changePassword, {
+            'old_password': oldpassword,
+            'new_password': newpassword,
+          });
+
+          if (response['status'] == true) {
+            Navigator.pop(context);
+            request.login(Constants.login, {
+              'username': _username,
+              'password': newpassword,
+            });
+          } else {
+            // Handle error
+            _showErrorDialog('Username dengan nama ini sudah ada!');
+          }
+        } catch (e) {
+          // Handle network error or other exceptions
+          print('Edit error: $e');
+        }
+      }
+    }
+
     return Scaffold(
       body: Form(
         // padding: const EdgeInsets.all(16.0),
@@ -48,16 +87,7 @@ class _RegisterState extends State<RegisterScreen> {
                   children: [
                     const Center(
                       child: Text(
-                        "Welcome!", // Teks baru ditambahkan di sini
-                        style: TextStyle(
-                          fontSize: 30, // Atur ukuran font sesuai kebutuhan
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const Center(
-                      child: Text(
-                        "Register",
+                        "Edit Profile",
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -66,26 +96,6 @@ class _RegisterState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 30),
                     TextFormField(
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter some text';
-                        }
-                        return null;
-                      },
-                      controller: _usernameController,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.teal.shade50,
-                        labelText: 'Username',
-                        hintText: "Masukkan username",
-                        isDense: true,
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: const BorderSide(color: Colors.white)),
-                      ),
-                    ),
-                    const SizedBox(height: 16.0),
-                    TextFormField(
                       obscureText: !_passwordVisible,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -93,13 +103,13 @@ class _RegisterState extends State<RegisterScreen> {
                         }
                         return null;
                       },
-                      controller: _passwordController,
+                      controller: _oldPassword,
                       keyboardType: TextInputType.visiblePassword,
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.teal.shade50,
-                        labelText: 'Kata sandi',
-                        hintText: "Masukkan kata sandi",
+                        labelText: 'Kata sandi lama',
+                        hintText: "Masukkan kata sandi lama Anda",
                         isDense: true,
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20),
@@ -125,18 +135,15 @@ class _RegisterState extends State<RegisterScreen> {
                         if (value == null || value.isEmpty) {
                           return 'Konfirmasi katasandi invalid';
                         }
-                        if (value != _passwordController.text) {
-                          return 'Konfirmasi katasandi tidak cocok';
-                        }
                         return null;
                       },
-                      controller: _confirmPasswordController,
+                      controller: _newPassword,
                       keyboardType: TextInputType.visiblePassword,
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.teal.shade50,
-                        labelText: 'Konfirmasi kata sandi',
-                        hintText: "Masukkan kembali kata sandi",
+                        labelText: 'Kata sandi baru',
+                        hintText: "Masukkan kata sandi baru Anda",
                         isDense: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
@@ -162,7 +169,7 @@ class _RegisterState extends State<RegisterScreen> {
                       onPressed: () {
                         // Perform registration logic
                         if (_fieldsIsNotEmpty()) {
-                          _performRegistration(context, request);
+                          performPasswordChange(context, request);
                         } else {
                           _showErrorDialog(
                               'Username atau kata sandi tidak valid. Coba lagi.');
@@ -172,22 +179,7 @@ class _RegisterState extends State<RegisterScreen> {
                         backgroundColor: Colors.teal,
                         foregroundColor: Colors.white,
                       ),
-                      child: const Text('Register'),
-                    ),
-                    const SizedBox(height: 12.0),
-                    TextButton(
-                      onPressed: () {
-                        // Navigate to the registration page
-                        Navigator.pop(context);
-                      },
-                      child: const Text(
-                        'Kembali ke Login',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          decoration: TextDecoration.underline,
-                          decorationColor: Colors.blue,
-                        ),
-                      ),
+                      child: const Text('Change Password'),
                     ),
                   ],
                 ),
@@ -200,48 +192,14 @@ class _RegisterState extends State<RegisterScreen> {
   }
 
   bool _fieldsIsNotEmpty() {
-    return _usernameController.text.isNotEmpty &&
-        _passwordController.text.isNotEmpty;
-  }
-
-  void _performRegistration(BuildContext context, request) async {
-    if (_passwordController.text != _confirmPasswordController.text) {
-      _showErrorDialog('Konfirmasi kata sandi tidak cocok');
-    } else {
-      String username = _usernameController.text;
-      String password = _passwordController.text;
-      try {
-        final response = await http.post(
-          Uri.parse(Constants.register),
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: {
-            'username': username,
-            'password': password,
-          },
-        );
-
-        if (response.statusCode == 201) {
-          // Handle successful registration
-          Navigator.pop(context);
-        } else {
-          // Handle error
-          print('Registration failed: ${response.body}');
-          _showErrorDialog('Username dengan nama ini sudah ada!');
-        }
-      } catch (e) {
-        // Handle network error or other exceptions
-        print('Registration error: $e');
-      }
-    }
+    return _oldPassword.text.isNotEmpty && _newPassword.text.isNotEmpty;
   }
 
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Gagal Mendaftar'),
+        title: const Text('Gagal Mengganti Kata Sandi'),
         content: Text(message),
         actions: [
           TextButton(

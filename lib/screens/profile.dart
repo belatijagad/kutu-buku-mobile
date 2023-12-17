@@ -1,101 +1,95 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:kutubuku/utils/constants.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:kutubuku/screens/edit_profile.dart';
+
+import 'package:provider/provider.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
 
 class ProfileScreen extends StatefulWidget {
-  final Function? onLogout;
-
-  const ProfileScreen({super.key, this.onLogout});
+  const ProfileScreen({super.key});
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  late Future<Map<String, dynamic>> _userData;
-  bool _loading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchAndLoadUserData();
-  }
-
-  Future<void> _fetchAndLoadUserData() async {
-    final prefs = await SharedPreferences.getInstance();
-    String? username = prefs.getString('username');
-    if (username != null) {
-      _userData = fetchUserDetails(username);
-    } else {
-      // Handle the scenario where there is no saved username
-    }
-    setState(() {
-      _loading = false;
-    });
-  }
-
-  Future<Map<String, dynamic>> fetchUserDetails(String username) async {
-    final response = await http.get(Uri.parse(Constants.getUser(username)));
-
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to load user data: ${response.body}');
-    }
-  }
-
-  Future<void> _logout(BuildContext context) async {
-    widget.onLogout!();
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(
-        'username'); // Assuming 'username' is the key for stored username
-
-    // Navigate to the login screen
-    Navigator.of(context)
-        .pushReplacementNamed('/login'); // Adjust the route as necessary
-  }
+  String _username = "";
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
+    Future<dynamic> getUser() async {
+      final response = await request.get(Constants.getUser);
+      return response;
+    }
+
+    getUser().then((value) => {
+          setState(() {
+            _username = value['username'];
+          })
+        });
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-      ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : FutureBuilder<Map<String, dynamic>>(
-              future: _userData,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text("Error: ${snapshot.error}"),
-                  );
-                } else if (snapshot.hasData) {
-                  return Container(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        Text('Username: ${snapshot.data!['username']}'),
-                        ElevatedButton(
-                          onPressed: () => _logout(context),
-                          child: Text('Logout'),
-                        ),
-                      ],
-                    ),
-                  );
-                } else {
-                  return const Center(
-                    child: Text("User data not found"),
-                  );
+      backgroundColor: const Color(0xFFC2F4E3),
+      drawer: const Drawer(),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Center(
+              child: Text(
+                "Selamat Membaca!",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Center(
+              child: Text(
+                _username,
+                style: const TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return const EditProfile();
+                }));
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Edit Profile'),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () async {
+                final response = await request.logout(Constants.logout);
+                if (response['status'] == true) {
+                  ScaffoldMessenger.of(context)
+                    ..hideCurrentSnackBar()
+                    ..showSnackBar(
+                        const SnackBar(content: Text("Selamat Tinggal.")));
+                  Navigator.pushReplacementNamed(context, '/landing');
                 }
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Logout'),
             ),
+          ],
+        ),
+      ),
     );
   }
 }
