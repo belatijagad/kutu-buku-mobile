@@ -66,6 +66,7 @@ class _EditProfileState extends State<EditProfile> {
     }
 
     return Scaffold(
+      appBar: AppBar(),
       body: Form(
         // padding: const EdgeInsets.all(16.0),
         key: _formKey,

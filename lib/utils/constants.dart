@@ -1,4 +1,3 @@
-
 class Constants {
   static const String baseUrl = 'http://127.0.0.1:8000/api';
 
@@ -11,11 +10,45 @@ class Constants {
   static const String books = '$baseUrl/books/';
   static const String createBooks = '$baseUrl/books/create/';
   static const String searchBooks = '$baseUrl/search/';
+  static const String searchBookmark = '$baseUrl/search_bookmark/';
+
   static const String getGenres = '$baseUrl/get_genres/';
   static const String getUser = '$baseUrl/get_user/';
 
   static String getBook(int id) {
     return '$baseUrl/books/$id/';
+  }
+
+  static String bookmarkBook(int id) {
+    return '$baseUrl/bookmark/$id/';
+  }
+
+  static String checkBookmark(int id) {
+    return '$baseUrl/is_bookmarked/$id/';
+  }
+
+  static String submitReview(int id) {
+    return '$baseUrl/submit_review/$id/';
+  }
+
+  static String fetchReview(int id) {
+    return '$baseUrl/fetch_reviews/$id/';
+  }
+
+  static String deleteReview(int id) {
+    return '$baseUrl/delete_review/$id/';
+  }
+
+  static String getReview(int id) {
+    return '$baseUrl/get_review/$id';
+  }
+
+  static String updateProgress(int bookId, int chaptNumber) {
+    return '$baseUrl/update_progress/$bookId/$chaptNumber';
+  }
+
+  static String getProgress(int id) {
+    return '$baseUrl/get_progress/$id';
   }
 
   static String updateBook(int id) {

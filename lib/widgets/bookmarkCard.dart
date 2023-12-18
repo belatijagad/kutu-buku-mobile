@@ -1,60 +1,44 @@
-// ignore_for_file: file_names, use_build_context_synchronously, library_private_types_in_public_api
-
 import 'package:flutter/material.dart';
 import 'package:kutubuku/models/book.dart';
 import 'package:kutubuku/screens/book_detail.dart';
 import 'package:kutubuku/utils/constants.dart';
+import 'package:kutubuku/widgets/progressBar.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 
-class BookCardWidget extends StatefulWidget {
+class bookmarkCardWidget extends StatefulWidget {
   final Book book;
 
-  const BookCardWidget({
+  const bookmarkCardWidget({
     super.key,
     required this.book,
   });
 
   @override
-  _BookCardWidgetState createState() => _BookCardWidgetState();
+  _bookmarkCardWidgetState createState() => _bookmarkCardWidgetState();
 }
 
-class _BookCardWidgetState extends State<BookCardWidget> {
+class _bookmarkCardWidgetState extends State<bookmarkCardWidget> {
   bool isBookmarked = false;
+  int currentChapterRead = 0;
+  dynamic lastRead;
 
   @override
   void initState() {
-    final request = context.read<CookieRequest>();
     super.initState();
-    if (request.loggedIn) {
-      checkBookmark();
-    }
+    fetchReadingProgress(); // Fetch reading progress when the widget is initialized.
   }
 
-  Future<void> checkBookmark() async {
+  Future<void> fetchReadingProgress() async {
     final request = context.read<CookieRequest>();
-    final response = await request.get(Constants.checkBookmark(widget.book.pk));
-    if (response['is_bookmarked']) {
-      setState(() {
-        isBookmarked = true;
-      });
-    }
-  }
-
-  Future<void> toggleBookmark() async {
-    final request = context.read<CookieRequest>();
-    final response =
-        await request.post(Constants.bookmarkBook(widget.book.pk), {});
-
+    final response = await request.get(Constants.getProgress(widget.book.pk));
     if (response['statusCode'] == 200) {
       setState(() {
-        isBookmarked = !isBookmarked;
+        currentChapterRead = response['current_chapter'];
+        lastRead = response['last_read'];
       });
     } else {
-      // Handle errors
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Error bookmarking book"),
-      ));
+      // Handle errors or show some default value.
     }
   }
 
@@ -62,20 +46,6 @@ class _BookCardWidgetState extends State<BookCardWidget> {
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
     final book = widget.book;
-
-    List<Widget> genreWidgets = book.fields.genre
-        .take(2) // Take only the first three genres
-        .map<Widget>((genre) => Chip(
-              label: Text(genre),
-              padding: const EdgeInsets.all(4),
-            ))
-        .toList();
-
-    // If there are more than three genres, add ellipses
-    if (book.fields.genre.length > 2) {
-      genreWidgets
-          .add(const Chip(label: Text('...'), padding: EdgeInsets.all(4)));
-    }
 
     return Card(
       shape: RoundedRectangleBorder(
@@ -124,21 +94,15 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        book.fields.author ??
-                            book.fields.user?.username ??
-                            'No Author',
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8.0,
-                        runSpacing: 8.0,
-                        children: genreWidgets,
-                      ),
+                          '$currentChapterRead/${book.fields.chapters} chapter terbaca'),
+                      const SizedBox(height: 4),
+                      buildProgressBar(
+                          currentChapterRead, book.fields.chapters),
+                      const SizedBox(height: 4),
+                      Text('Terakhir membaca $lastRead'),
                       const SizedBox(height: 8),
                       SizedBox(
-                        width: double
-                            .infinity, // This makes the button take the full width of its parent.
+                        width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
                             Navigator.push(
@@ -154,7 +118,7 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                                 color: Colors.blue, width: 1.0),
                           ),
                           child: const Text(
-                            'Baca',
+                            'Lanjut Membaca',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.black,
@@ -167,30 +131,6 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                 ),
               ),
             ],
-          ),
-          Positioned(
-            top: 0,
-            right: 0,
-            child: IconButton(
-              icon: Icon(
-                isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                size: 40,
-              ),
-              color: isBookmarked
-                  ? const Color(0xFF3BEDB7)
-                  : const Color(0xFF3BEDB7),
-              onPressed: () async {
-                bool loggedIn = request.loggedIn;
-                if (loggedIn) {
-                  await toggleBookmark();
-                } else {
-                  // Show message or navigate to login screen
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text("Please log in to bookmark books"),
-                  ));
-                }
-              },
-            ),
           ),
         ],
       ),

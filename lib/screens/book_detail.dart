@@ -1,14 +1,22 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, no_leading_underscores_for_local_identifiers
+
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
 import 'package:kutubuku/models/book.dart';
+import 'package:kutubuku/screens/novelChapter.dart';
+import 'package:kutubuku/utils/constants.dart';
+import 'package:kutubuku/widgets/reviewForm.dart';
+import 'package:kutubuku/widgets/reviewList.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
 
 class DetailScreen extends StatefulWidget {
-  final Fields bookField;
+  final Book book;
   const DetailScreen({
     super.key,
-    required this.bookField,
+    required this.book,
   });
 
   @override
@@ -16,9 +24,70 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
+  final int itemsPerPage = 10;
+  int currentPage = 1;
+  String _username = '';
+  late Future<List<dynamic>> _reviewsFuture;
+
+  List<int> displayedChapters = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadChapters();
+    _reviewsFuture = fetchReviews(widget.book.pk);
+  }
+
+  void loadChapters() {
+    int totalChapters = widget.book.fields.chapters;
+    int startIndex = (currentPage - 1) * itemsPerPage;
+    int endIndex = startIndex + itemsPerPage;
+    endIndex = endIndex > totalChapters ? totalChapters : endIndex;
+
+    setState(() {
+      displayedChapters =
+          List.generate(endIndex - startIndex, (i) => startIndex + i + 1);
+    });
+  }
+
+  void changePage(int newPage) {
+    setState(() {
+      currentPage = newPage;
+      loadChapters();
+    });
+  }
+
+  void updateReviews() {
+    setState(() {});
+  }
+
+  Future<List<dynamic>> fetchReviews(int bookId) async {
+    final request = context.read<CookieRequest>();
+
+    final response = await request.get(Constants.fetchReview(bookId));
+    return response['reviews'];
+  }
+
+  Future<void> updateReadingProgress(int chapterNumber) async {
+    final request = context.read<CookieRequest>();
+
+    try {
+      final response = await request
+          .get(Constants.updateProgress(widget.book.pk, chapterNumber));
+
+      if (response['statusCode'] == 200) {
+        print('Progress updated: ${response['current_chapter']}');
+      } else {
+        print('Failed to update progress: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error updating progress: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final bookField = widget.bookField;
+    final bookField = widget.book.fields;
 
     List<Widget> genreWidgets = bookField.genre
         .map<Widget>((genre) => Chip(
@@ -26,6 +95,61 @@ class _DetailScreenState extends State<DetailScreen> {
               padding: const EdgeInsets.all(4),
             ))
         .toList();
+
+    Widget _buildChapterGrid() {
+      return GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 3,
+        ),
+        itemCount: displayedChapters.length,
+        itemBuilder: (BuildContext context, int index) {
+          int chapterNumber = displayedChapters[index];
+          return InkWell(
+            onTap: () {
+              updateReadingProgress(chapterNumber);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChapterScreen(
+                    bookName: widget.book.fields.title,
+                    chapter: chapterNumber,
+                    totalChapters: widget.book.fields.chapters,
+                    updateProgress: updateReadingProgress,
+                  ),
+                ),
+              );
+            },
+            child: Card(
+              child: Center(
+                child: Text('Chapter $chapterNumber'),
+              ),
+            ),
+          );
+        },
+      );
+    }
+
+    final request = context.watch<CookieRequest>();
+    Future<dynamic> getUser() async {
+      final response = await request.get(Constants.getUser);
+      return response;
+    }
+
+    if (request.loggedIn) {
+      getUser().then(
+        (value) => {
+          if (_username != value['username'])
+            {
+              setState(() {
+                _username = value['username'];
+              })
+            }
+        },
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(),
@@ -121,12 +245,47 @@ class _DetailScreenState extends State<DetailScreen> {
               ),
               Column(
                 children: [
-                  Text('Chapter'),
+                  const Text(
+                    'Chapters',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  _buildChapterGrid(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back),
+                        onPressed: currentPage > 1
+                            ? () => changePage(currentPage - 1)
+                            : null,
+                      ),
+                      Text(
+                          'Page $currentPage of ${(bookField.chapters / itemsPerPage).ceil()}'),
+                      IconButton(
+                        icon: const Icon(Icons.arrow_forward),
+                        onPressed: currentPage <
+                                (bookField.chapters / itemsPerPage).ceil()
+                            ? () => changePage(currentPage + 1)
+                            : null,
+                      ),
+                    ],
+                  ),
                 ],
               ),
               Column(
                 children: [
-                  Text('Reviews'),
+                  const Text('Reviews'),
+                  ReviewForm(
+                    bookId: widget.book.pk,
+                    currentUser: _username,
+                    onReviewSubmitted: updateReviews,
+                  ),
+                  ReviewList(
+                    bookId: widget.book.pk,
+                    currentUser: _username,
+                    reviewsFuture: _reviewsFuture,
+                    fetchReviews: fetchReviews,
+                  ),
                 ],
               )
             ],

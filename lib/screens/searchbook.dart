@@ -70,6 +70,7 @@ class _SearchBookScreenState extends State<SearchScreen> {
   Future<List<Book>> fetchBooks(String query) async {
     final response =
         await http.get(Uri.parse('${Constants.searchBooks}?q=$query'));
+    // print(response.body);
 
     if (response.statusCode == 200) {
       return bookFromJson(response.body);
@@ -164,7 +165,9 @@ class _SearchBookScreenState extends State<SearchScreen> {
                       itemBuilder: (context, index) {
                         final book = books[index];
                         return BookCardWidget(
-                            book: book); // Pass the book object to the widget
+                          key: ValueKey(book),
+                          book: book,
+                        ); // Pass the book object to the widget
                       },
                     ),
             ),

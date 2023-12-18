@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:kutubuku/screens/bookmark.dart';
 import 'package:kutubuku/utils/constants.dart';
 import 'package:kutubuku/screens/edit_profile.dart';
 
@@ -26,9 +27,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     getUser().then((value) => {
-          setState(() {
-            _username = value['username'];
-          })
+          if (_username != value['username'])
+            {
+              setState(() {
+                _username = value['username'];
+              })
+            }
         });
 
     return Scaffold(
@@ -68,6 +72,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 foregroundColor: Colors.white,
               ),
               child: const Text('Edit Profile'),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BookmarkScreen(),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Bookmark'),
             ),
             const SizedBox(height: 10),
             ElevatedButton(
