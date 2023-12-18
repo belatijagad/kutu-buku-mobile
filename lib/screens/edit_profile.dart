@@ -14,6 +14,7 @@ class EditProfile extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfile> {
   final TextEditingController _oldPassword = TextEditingController();
+  final TextEditingController _newDisplayName = TextEditingController();
   final TextEditingController _newPassword = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   String _username = "";
@@ -31,8 +32,8 @@ class _EditProfileState extends State<EditProfile> {
     }
 
     getUser().then((value) => {
-          if (mounted) setState(() {
-            _username = value['username'];
+          if (mounted && _username != value['display_name']) setState(() {
+            _username = value['display_name'];
           })
         });
 
@@ -42,10 +43,21 @@ class _EditProfileState extends State<EditProfile> {
       } else {
         String oldpassword = _oldPassword.text;
         String newpassword = _newPassword.text;
+        String newdisplayname = _newDisplayName.text;
+
+        if (newpassword.isEmpty) {
+          newpassword = oldpassword;
+        }
+
+        if (newdisplayname.isEmpty) {
+          newdisplayname = _username;
+        }
+
         try {
           final response = await request.post(Constants.changePassword, {
             'old_password': oldpassword,
             'new_password': newpassword,
+            'display_name': newdisplayname,
           });
 
           if (response['status'] == true) {
@@ -96,39 +108,25 @@ class _EditProfileState extends State<EditProfile> {
                     ),
                     const SizedBox(height: 30),
                     TextFormField(
-                      obscureText: !_passwordVisible,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Password invalid';
+                          return 'Please enter some text';
                         }
                         return null;
                       },
-                      controller: _oldPassword,
-                      keyboardType: TextInputType.visiblePassword,
+                      controller: _newDisplayName,
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.teal.shade50,
-                        labelText: 'Kata sandi lama',
-                        hintText: "Masukkan kata sandi lama Anda",
+                        labelText: 'Display Name',
+                        hintText: _username,
                         isDense: true,
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20),
                             borderSide: const BorderSide(color: Colors.white)),
-                        suffixIcon: IconButton(
-                          icon: Icon(!_passwordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off),
-                          onPressed: () {
-                            setState(
-                              () {
-                                _passwordVisible = !_passwordVisible;
-                              },
-                            );
-                          },
-                        ),
                       ),
                     ),
-                    const SizedBox(height: 16.0),
+                    const SizedBox(height: 16),
                     TextFormField(
                       obscureText: !_confirmPasswordVisible,
                       validator: (value) {
@@ -164,15 +162,52 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      obscureText: !_passwordVisible,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Password invalid';
+                        }
+                        return null;
+                      },
+                      controller: _oldPassword,
+                      keyboardType: TextInputType.visiblePassword,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.teal.shade50,
+                        labelText: 'Kata sandi lama',
+                        hintText: "Masukkan kata sandi lama Anda",
+                        isDense: true,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: const BorderSide(color: Colors.white)),
+                        suffixIcon: IconButton(
+                          icon: Icon(!_passwordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off),
+                          onPressed: () {
+                            setState(
+                              () {
+                                _passwordVisible = !_passwordVisible;
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 24.0),
                     ElevatedButton(
                       onPressed: () {
                         // Perform registration logic
                         if (_fieldsIsNotEmpty()) {
                           performPasswordChange(context, request);
+                        } else if (_oldPassword.text.isEmpty) {
+                          _showErrorDialog(
+                              'Tolong isi kata sandi lama Anda');
                         } else {
                           _showErrorDialog(
-                              'Username atau kata sandi tidak valid. Coba lagi.');
+                              'Anda belum mengubah apa-apa?');
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -192,14 +227,14 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   bool _fieldsIsNotEmpty() {
-    return _oldPassword.text.isNotEmpty && _newPassword.text.isNotEmpty;
+    return _oldPassword.text.isNotEmpty && (_newPassword.text.isNotEmpty || _newDisplayName.text.isNotEmpty);
   }
 
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Gagal Mengganti Kata Sandi'),
+        title: const Text('Gagal Mengganti Mengedit Profile'),
         content: Text(message),
         actions: [
           TextButton(

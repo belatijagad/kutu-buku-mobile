@@ -26,8 +26,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     getUser().then((value) => {
-          if (mounted) setState(() {
-            _username = value['username'];
+          if (mounted && _username != value['display_name']) setState(() {
+            _username = value['display_name'];
           })
         });
 
