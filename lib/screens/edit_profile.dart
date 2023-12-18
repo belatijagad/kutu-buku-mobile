@@ -31,7 +31,7 @@ class _EditProfileState extends State<EditProfile> {
     }
 
     getUser().then((value) => {
-          setState(() {
+          if (mounted) setState(() {
             _username = value['username'];
           })
         });
