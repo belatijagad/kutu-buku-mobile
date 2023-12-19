@@ -26,7 +26,7 @@ class _bookmarkCardWidgetState extends State<bookmarkCardWidget> {
   @override
   void initState() {
     super.initState();
-    fetchReadingProgress(); // Fetch reading progress when the widget is initialized.
+    fetchReadingProgress();
   }
 
   Future<void> fetchReadingProgress() async {
