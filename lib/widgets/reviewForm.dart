@@ -11,12 +11,14 @@ class ReviewForm extends StatefulWidget {
   final int bookId;
   final String currentUser;
   final Function onReviewSubmitted;
+  final Function onReviewDeleted;
 
   const ReviewForm({
     super.key,
     required this.bookId,
     required this.currentUser,
     required this.onReviewSubmitted,
+    required this.onReviewDeleted,
   });
 
   @override
@@ -25,7 +27,85 @@ class ReviewForm extends StatefulWidget {
 
 class _ReviewFormState extends State<ReviewForm> {
   int selectedRating = 0;
-  String reviewText = "";
+  TextEditingController reviewController = TextEditingController();
+  bool hasExistingReview = false;
+  int? existingReviewId;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserReview();
+  }
+
+  Future<void> _fetchUserReview() async {
+    final request = context.read<CookieRequest>();
+
+    if (request.loggedIn) {
+      final response = await request.get(Constants.getReview(widget.bookId));
+      if (response['status'] == 'success') {
+        setState(() {
+          selectedRating = response['review']['rating'];
+          reviewController.text = response['review']['comment'];
+          hasExistingReview = true;
+          existingReviewId = response['review']['id'];
+        });
+      } else {
+        setState(() {
+          selectedRating = 0;
+          reviewController.text = '';
+          hasExistingReview = false;
+          existingReviewId = null;
+        });
+      }
+    }
+  }
+
+  Widget _buildReviewInput() {
+    return TextField(
+      readOnly: hasExistingReview,
+      controller: reviewController,
+      decoration: const InputDecoration(
+        labelText: 'Ulasan Anda',
+        border: OutlineInputBorder(),
+      ),
+      maxLines: 4,
+    );
+  }
+
+  Future<void> submitReview(int bookId, int rating, String comment) async {
+    final request = context.read<CookieRequest>();
+    final response = await request.postJson(
+      Constants.submitReview(bookId),
+      jsonEncode({
+        'rating': rating,
+        'comment': comment,
+      }),
+    );
+
+    widget.onReviewSubmitted();
+  }
+
+  Widget _buildSubmitButton() {
+    return ElevatedButton(
+      onPressed: selectedRating > 0 && reviewController.text.isNotEmpty
+          ? () {
+              if (widget.currentUser == '') {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text("Tolong masuk untuk menambahkan ulasan."),
+                ));
+              } else if (!hasExistingReview) {
+                submitReview(
+                    widget.bookId, selectedRating, reviewController.text);
+                _fetchUserReview();
+              } else {
+                widget.onReviewDeleted(existingReviewId);
+                _fetchUserReview();
+              }
+            }
+          : null,
+      child: Text(hasExistingReview ? 'Hapus Ulasan' : 'Kirim Ulasan'),
+    );
+  }
 
   Widget _buildStarRating() {
     return Row(
@@ -37,61 +117,14 @@ class _ReviewFormState extends State<ReviewForm> {
             color: Colors.amber,
           ),
           onPressed: () {
-            setState(() {
-              selectedRating = index + 1;
-            });
+            if (!hasExistingReview) {
+              setState(() {
+                selectedRating = index + 1;
+              });
+            }
           },
         );
       }),
-    );
-  }
-
-  Widget _buildReviewInput() {
-    return TextField(
-      decoration: const InputDecoration(
-        labelText: 'Ulasan Anda',
-        border: OutlineInputBorder(),
-      ),
-      maxLines: 4,
-      onChanged: (value) {
-        // reviewText = value;
-        setState(() {
-          reviewText = value;
-        });
-      },
-    );
-  }
-
-  Future<void> submitReview(int bookId, int rating, String comment) async {
-    final request = context.read<CookieRequest>();
-    // ignore: unused_local_variable
-    final response = await request.postJson(
-      Constants.submitReview(bookId),
-      jsonEncode(
-        {
-          'rating': rating,
-          'comment': comment,
-        },
-      ),
-    );
-
-    widget.onReviewSubmitted();
-  }
-
-  Widget _buildSubmitButton() {
-    return ElevatedButton(
-      onPressed: selectedRating > 0 && reviewText.isNotEmpty
-          ? () {
-              if (widget.currentUser == '') {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text("Tolong masuk untuk menambahkan ulasan."),
-                ));
-              } else {
-                submitReview(widget.bookId, selectedRating, reviewText);
-              }
-            }
-          : null,
-      child: const Text('Kirim Ulasan'),
     );
   }
 
@@ -100,6 +133,7 @@ class _ReviewFormState extends State<ReviewForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(hasExistingReview ? 'Ulasan Anda' : 'Tulis sebuah ulasan!'),
         _buildStarRating(),
         const SizedBox(height: 8),
         _buildReviewInput(),

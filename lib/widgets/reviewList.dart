@@ -1,9 +1,7 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
-import 'package:pbp_django_auth/pbp_django_auth.dart';
-import 'package:provider/provider.dart';
-import 'package:kutubuku/utils/constants.dart';
+import 'package:kutubuku/widgets/reviewCard.dart';
 
 class ReviewList extends StatefulWidget {
   final int bookId;
@@ -24,19 +22,6 @@ class ReviewList extends StatefulWidget {
 }
 
 class _ReviewListState extends State<ReviewList> {
-  Future<void> deleteReview(int reviewId) async {
-    final request = context.read<CookieRequest>();
-    final response = await request.get(Constants.deleteReview(reviewId));
-
-    if (response['statusCode'] == 200) {
-      widget.onReviewDeleted();
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to delete review')),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<dynamic>>(
@@ -55,27 +40,15 @@ class _ReviewListState extends State<ReviewList> {
             itemBuilder: (context, index) {
               var review = reviews[index];
               bool isUserReview = review['user'] == widget.currentUser;
-
-              return ListTile(
-                title: Text(review['user']),
-                subtitle: Text(review['comment']),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ...List.generate(
-                      5,
-                      (i) => Icon(
-                        i < review['rating'] ? Icons.star : Icons.star_border,
-                        color: Colors.amber,
-                      ),
-                    ),
-                    if (isUserReview)
-                      IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => deleteReview(review['id']),
-                      ),
-                  ],
-                ),
+              return ReviewCard(
+                username: review['user'],
+                initialScore: review['upvotes'] - review['downvotes'],
+                date: review['created_at'],
+                comment: review['comment'],
+                rating: review['rating'],
+                reviewId: review['id'],
+                // isUserReview: isUserReview,
+                onDelete: () => widget.onReviewDeleted(review['id']),
               );
             },
           );

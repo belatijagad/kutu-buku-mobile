@@ -60,6 +60,19 @@ class _DetailScreenState extends State<DetailScreen> {
     });
   }
 
+  Future<void> deleteReview(int reviewId) async {
+    final request = context.read<CookieRequest>();
+    final response = await request.get(Constants.deleteReview(reviewId));
+
+    if (response['statusCode'] == 200) {
+      updateReviews();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to delete review')),
+      );
+    }
+  }
+
   Future<List<dynamic>> fetchReviews(int bookId) async {
     final request = context.read<CookieRequest>();
 
@@ -205,7 +218,8 @@ class _DetailScreenState extends State<DetailScreen> {
                                     color: Colors.amber);
                               }
                             }),
-                            Text('${(bookField.averageScore / 20.0)}/5.0'),
+                            Text(
+                                '${((bookField.averageScore / 20.0).toStringAsFixed(2))}/5.0'),
                           ]),
                           Text(
                             bookField.title,
@@ -278,11 +292,12 @@ class _DetailScreenState extends State<DetailScreen> {
                     bookId: widget.book.pk,
                     currentUser: _username,
                     onReviewSubmitted: updateReviews,
+                    onReviewDeleted: deleteReview,
                   ),
                   ReviewList(
                     bookId: widget.book.pk,
                     currentUser: _username,
-                    onReviewDeleted: updateReviews,
+                    onReviewDeleted: deleteReview,
                     reviewsFuture: _reviewsFuture,
                   ),
                 ],

@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:kutubuku/screens/addbook.dart';
 import 'package:kutubuku/screens/bookmark.dart';
 import 'package:kutubuku/utils/constants.dart';
 import 'package:kutubuku/screens/edit_profile.dart';
@@ -73,7 +74,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: const Text('Edit Profile'),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -89,7 +90,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: const Text('Bookmark'),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddBookScreen(),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Tambah Buku'),
+            ),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () async {
                 final response = await request.logout(Constants.logout);

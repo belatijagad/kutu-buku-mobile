@@ -99,7 +99,9 @@ class _bookmarkCardWidgetState extends State<bookmarkCardWidget> {
                       buildProgressBar(
                           currentChapterRead, book.fields.chapters),
                       const SizedBox(height: 4),
-                      Text('Terakhir membaca $lastRead'),
+                      Text(lastRead == null
+                          ? 'Belum pernah dibaca'
+                          : 'Terakhir membaca $lastRead'),
                       const SizedBox(height: 8),
                       SizedBox(
                         width: double.infinity,

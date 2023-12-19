@@ -7,6 +7,7 @@ class Constants {
 
   static const String changePassword = '$baseUrl/change_password/';
 
+  static const String addBook = '$baseUrl/add_book/';
   static const String books = '$baseUrl/books/';
   static const String createBooks = '$baseUrl/books/create/';
   static const String searchBooks = '$baseUrl/search/';
@@ -57,5 +58,17 @@ class Constants {
 
   static String deleteBook(int id) {
     return '$baseUrl/books/$id/delete/';
+  }
+
+  static String upvoteReview(int id) {
+    return '$baseUrl/reviews/$id/upvote';
+  }
+
+  static String downvoteReview(int id) {
+    return '$baseUrl/reviews/$id/downvote';
+  }
+
+  static String getVoteStatus(int id) {
+    return '$baseUrl/get_vote_status/$id/';
   }
 }
