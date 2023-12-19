@@ -1,7 +1,4 @@
 // ignore_for_file: library_private_types_in_public_api, no_leading_underscores_for_local_identifiers
-
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 
 import 'package:kutubuku/models/book.dart';
@@ -58,7 +55,9 @@ class _DetailScreenState extends State<DetailScreen> {
   }
 
   void updateReviews() {
-    setState(() {});
+    setState(() {
+      _reviewsFuture = fetchReviews(widget.book.pk);
+    });
   }
 
   Future<List<dynamic>> fetchReviews(int bookId) async {
@@ -283,8 +282,8 @@ class _DetailScreenState extends State<DetailScreen> {
                   ReviewList(
                     bookId: widget.book.pk,
                     currentUser: _username,
+                    onReviewDeleted: updateReviews,
                     reviewsFuture: _reviewsFuture,
-                    fetchReviews: fetchReviews,
                   ),
                 ],
               )

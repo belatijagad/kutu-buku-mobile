@@ -186,7 +186,8 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                 } else {
                   // Show message or navigate to login screen
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text("Please log in to bookmark books"),
+                    content:
+                        Text("Tolong masuk untuk menambahkan daftar baca."),
                   ));
                 }
               },

@@ -128,8 +128,8 @@ class _LoginPageState extends State<LoginScreen> {
                         if (response['status'] == true) {
                           ScaffoldMessenger.of(context)
                             ..hideCurrentSnackBar()
-                            ..showSnackBar(
-                            const SnackBar(content: Text("Selamat datang.")));
+                            ..showSnackBar(const SnackBar(
+                                content: Text("Berhasil masuk!")));
                           Navigator.pushReplacementNamed(context, '/landing');
                         } else {
                           showDialog(
@@ -189,7 +189,8 @@ class _LoginPageState extends State<LoginScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Gagal masuk'),
-        content: const Text('Username atau kata sandi tidak valid.'),
+        content: const Text(
+            'Gagal untuk masuk. Tolong periksa kembali kredensial Anda.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

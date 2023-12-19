@@ -8,15 +8,15 @@ import 'package:kutubuku/utils/constants.dart';
 class ReviewList extends StatefulWidget {
   final int bookId;
   final String currentUser;
+  final Function onReviewDeleted;
   Future<List<dynamic>> reviewsFuture;
-  final Function fetchReviews;
 
   ReviewList({
     Key? key,
     required this.bookId,
     required this.currentUser,
+    required this.onReviewDeleted,
     required this.reviewsFuture,
-    required this.fetchReviews,
   }) : super(key: key);
 
   @override
@@ -29,12 +29,8 @@ class _ReviewListState extends State<ReviewList> {
     final response = await request.get(Constants.deleteReview(reviewId));
 
     if (response['statusCode'] == 200) {
-      // Refresh parent widget's future to update the review list.
-      setState(() {
-        widget.reviewsFuture = widget.fetchReviews(widget.bookId);
-      });
+      widget.onReviewDeleted();
     } else {
-      // Handle error...
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to delete review')),
       );

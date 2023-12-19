@@ -165,7 +165,7 @@ class _RegisterState extends State<RegisterScreen> {
                           _performRegistration(context, request);
                         } else {
                           _showErrorDialog(
-                              'Username atau kata sandi tidak valid. Coba lagi.');
+                              'Gagal untuk mendaftar. Tolong periksa kembali kredensial Anda.');
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -223,8 +223,10 @@ class _RegisterState extends State<RegisterScreen> {
         );
 
         if (response.statusCode == 201) {
-          // Handle successful registration
           Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Berhasil mendaftar!"),
+          ));
         } else {
           // Handle error
           print('Registration failed: ${response.body}');

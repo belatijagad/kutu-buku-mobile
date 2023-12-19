@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, library_private_types_in_public_api
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -10,11 +12,12 @@ class ReviewForm extends StatefulWidget {
   final String currentUser;
   final Function onReviewSubmitted;
 
-  const ReviewForm(
-      {super.key,
-      required this.bookId,
-      required this.currentUser,
-      required this.onReviewSubmitted});
+  const ReviewForm({
+    super.key,
+    required this.bookId,
+    required this.currentUser,
+    required this.onReviewSubmitted,
+  });
 
   @override
   _ReviewFormState createState() => _ReviewFormState();
@@ -46,12 +49,15 @@ class _ReviewFormState extends State<ReviewForm> {
   Widget _buildReviewInput() {
     return TextField(
       decoration: const InputDecoration(
-        labelText: 'Your Review',
+        labelText: 'Ulasan Anda',
         border: OutlineInputBorder(),
       ),
       maxLines: 4,
       onChanged: (value) {
-        reviewText = value;
+        // reviewText = value;
+        setState(() {
+          reviewText = value;
+        });
       },
     );
   }
@@ -68,11 +74,8 @@ class _ReviewFormState extends State<ReviewForm> {
         },
       ),
     );
-    // if (response.['statusCode'] == 201) {
-    //   print('Review submitted successfully');
-    // } else {
-    //   print('Failed to submit review: ${response.body}');
-    // }
+
+    widget.onReviewSubmitted();
   }
 
   Widget _buildSubmitButton() {
@@ -80,14 +83,15 @@ class _ReviewFormState extends State<ReviewForm> {
       onPressed: selectedRating > 0 && reviewText.isNotEmpty
           ? () {
               if (widget.currentUser == '') {
-                print("login dulu");
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text("Tolong masuk untuk menambahkan ulasan."),
+                ));
               } else {
                 submitReview(widget.bookId, selectedRating, reviewText);
-                widget.onReviewSubmitted();
               }
             }
           : null,
-      child: const Text('Submit Review'),
+      child: const Text('Kirim Ulasan'),
     );
   }
 
