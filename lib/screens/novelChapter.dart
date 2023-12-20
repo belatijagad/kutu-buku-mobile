@@ -24,7 +24,7 @@ class ChapterScreen extends StatefulWidget {
 class _ChapterScreenState extends State<ChapterScreen> {
   @override
   Widget build(BuildContext context) {
-    Random random = new Random();
+    Random random = Random();
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.bookName),
@@ -35,18 +35,34 @@ class _ChapterScreenState extends State<ChapterScreen> {
           child: Column(
             children: [
               Text(
-                  'Chapter ${widget.chapter}: ${loremIpsum(words: random.nextInt(5) + 3)}'),
+                'Chapter ${widget.chapter}: ${loremIpsum(words: random.nextInt(5) + 3)}',
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Montserrat',
+                ),
+              ),
+              const SizedBox(height: 16),
               ChapterNavigationControls(
                 currentChapter: widget.chapter,
                 totalChapters: widget.totalChapters,
                 onNavigate: (chapter) => _navigateToChapter(context, chapter),
               ),
-              Text(loremIpsum(words: 669, paragraphs: 5, initWithLorem: true)),
+              const SizedBox(height: 16),
+              Text(
+                loremIpsum(words: 669, paragraphs: 5, initWithLorem: true),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontFamily: 'Montserrat',
+                ),
+              ),
+              const SizedBox(height: 16),
               ChapterNavigationControls(
                 currentChapter: widget.chapter,
                 totalChapters: widget.totalChapters,
                 onNavigate: (chapter) => _navigateToChapter(context, chapter),
               ),
+              const SizedBox(height: 16),
             ],
           ),
         ),

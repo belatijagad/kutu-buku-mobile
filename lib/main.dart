@@ -68,7 +68,7 @@ class _BaseScreenState extends State<BaseScreen> {
       const Landing(),
       const SearchScreen(),
       if (!_isLoggedIn) const LoginScreen(),
-      if (_isLoggedIn) const ProfileScreen(),
+      if (_isLoggedIn) ProfileScreen(),
     ];
     return Scaffold(
       body: IndexedStack(

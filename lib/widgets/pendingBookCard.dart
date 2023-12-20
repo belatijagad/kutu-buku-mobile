@@ -7,79 +7,27 @@ import 'package:kutubuku/utils/constants.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 
-class BookCardWidget extends StatefulWidget {
+class PendingBookCardWidget extends StatefulWidget {
   final Book book;
+  final Function onApprove;
+  final Function onReject;
 
-  const BookCardWidget({
+  const PendingBookCardWidget({
     super.key,
     required this.book,
+    required this.onApprove,
+    required this.onReject,
   });
 
   @override
-  _BookCardWidgetState createState() => _BookCardWidgetState();
+  _PendingBookCardWidgetState createState() => _PendingBookCardWidgetState();
 }
 
-class _BookCardWidgetState extends State<BookCardWidget> {
-  bool isBookmarked = false;
-
-  @override
-  void initState() {
-    final request = context.read<CookieRequest>();
-    super.initState();
-    if (request.loggedIn) {
-      checkBookmark();
-    }
-  }
-
-  Future<void> checkBookmark() async {
-    final request = context.read<CookieRequest>();
-    try {
-      final response =
-          await request.get(Constants.checkBookmark(widget.book.pk));
-      if (response['is_bookmarked']) {
-        setState(() {
-          isBookmarked = true;
-        });
-      }
-    } catch (e) {}
-    ;
-  }
-
-  Future<void> toggleBookmark() async {
-    final request = context.read<CookieRequest>();
-    final response =
-        await request.post(Constants.bookmarkBook(widget.book.pk), {});
-
-    if (response['statusCode'] == 200) {
-      setState(() {
-        isBookmarked = !isBookmarked;
-      });
-    } else {
-      // Handle errors
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Error bookmarking book"),
-      ));
-    }
-  }
-
+class _PendingBookCardWidgetState extends State<PendingBookCardWidget> {
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
     final book = widget.book;
-
-    List<Widget> genreWidgets = book.fields.genre
-        .take(2) // Take only the first three genres
-        .map<Widget>((genre) => Chip(
-              label: Text(genre),
-              padding: const EdgeInsets.all(4),
-            ))
-        .toList();
-
-    // If there are more than three genres, add ellipses
-    if (book.fields.genre.length > 2) {
-      genreWidgets
-          .add(const Chip(label: Text('...'), padding: EdgeInsets.all(4)));
-    }
 
     return Card(
       shape: RoundedRectangleBorder(
@@ -118,6 +66,7 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                               book.fields.title,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
+                                fontFamily: 'Montserrat',
                                 fontSize: 20,
                               ),
                               overflow: TextOverflow.ellipsis,
@@ -131,18 +80,14 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                         book.fields.author ??
                             book.fields.user?.username ??
                             'No Author',
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8.0,
-                        runSpacing: 8.0,
-                        children: genreWidgets,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontFamily: 'Montserrat',
+                        ),
                       ),
                       const SizedBox(height: 8),
                       SizedBox(
-                        width: double
-                            .infinity, // This makes the button take the full width of its parent.
+                        width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
                             Navigator.push(
@@ -166,36 +111,28 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                           ),
                         ),
                       ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        child: Wrap(
+                          alignment: WrapAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                                onPressed: () => widget.onReject(book.pk),
+                                child: const Text('Tolak',
+                                    style: TextStyle(color: Colors.red))),
+                            ElevatedButton(
+                                onPressed: () => widget.onApprove(book.pk),
+                                child: const Text('Terima',
+                                    style: TextStyle(color: Colors.green))),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
             ],
-          ),
-          Positioned(
-            top: 0,
-            right: 0,
-            child: IconButton(
-              icon: Icon(
-                isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                size: 40,
-              ),
-              color: isBookmarked
-                  ? const Color(0xFF3BEDB7)
-                  : const Color(0xFF3BEDB7),
-              onPressed: () async {
-                bool loggedIn = request.loggedIn;
-                if (loggedIn) {
-                  await toggleBookmark();
-                } else {
-                  // Show message or navigate to login screen
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content:
-                        Text("Tolong masuk untuk menambahkan daftar baca."),
-                  ));
-                }
-              },
-            ),
           ),
         ],
       ),

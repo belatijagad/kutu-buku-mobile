@@ -5,14 +5,14 @@ import 'package:kutubuku/widgets/reviewCard.dart';
 
 class ReviewList extends StatefulWidget {
   final int bookId;
-  final String currentUser;
+  final bool isSuperUser;
   final Function onReviewDeleted;
   Future<List<dynamic>> reviewsFuture;
 
   ReviewList({
     Key? key,
     required this.bookId,
-    required this.currentUser,
+    required this.isSuperUser,
     required this.onReviewDeleted,
     required this.reviewsFuture,
   }) : super(key: key);
@@ -39,7 +39,7 @@ class _ReviewListState extends State<ReviewList> {
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               var review = reviews[index];
-              bool isUserReview = review['user'] == widget.currentUser;
+              bool isSuperUser = widget.isSuperUser;
               return ReviewCard(
                 username: review['user'],
                 initialScore: review['upvotes'] - review['downvotes'],
@@ -47,7 +47,7 @@ class _ReviewListState extends State<ReviewList> {
                 comment: review['comment'],
                 rating: review['rating'],
                 reviewId: review['id'],
-                // isUserReview: isUserReview,
+                isSuperUser: isSuperUser,
                 onDelete: () => widget.onReviewDeleted(review['id']),
               );
             },

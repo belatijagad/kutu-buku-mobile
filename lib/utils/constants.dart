@@ -9,6 +9,7 @@ class Constants {
 
   static const String addBook = '$baseUrl/add_book/';
   static const String books = '$baseUrl/books/';
+  static const String pendingBooks = '$baseUrl/fetch_approval/';
   static const String createBooks = '$baseUrl/books/create/';
   static const String searchBooks = '$baseUrl/search/';
   static const String searchBookmark = '$baseUrl/search_bookmark/';
@@ -52,8 +53,8 @@ class Constants {
     return '$baseUrl/get_progress/$id';
   }
 
-  static String updateBook(int id) {
-    return '$baseUrl/books/$id/update/';
+  static String approveBook(int id) {
+    return '$baseUrl/books/$id/approve/';
   }
 
   static String deleteBook(int id) {

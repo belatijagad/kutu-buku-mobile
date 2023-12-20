@@ -90,9 +90,11 @@ class _ReviewFormState extends State<ReviewForm> {
       onPressed: selectedRating > 0 && reviewController.text.isNotEmpty
           ? () {
               if (widget.currentUser == '') {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text("Tolong masuk untuk menambahkan ulasan."),
-                ));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Tolong masuk untuk menambahkan ulasan."),
+                  ),
+                );
               } else if (!hasExistingReview) {
                 submitReview(
                     widget.bookId, selectedRating, reviewController.text);
@@ -133,12 +135,22 @@ class _ReviewFormState extends State<ReviewForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(hasExistingReview ? 'Ulasan Anda' : 'Tulis sebuah ulasan!'),
-        _buildStarRating(),
+        Align(
+          alignment: Alignment.center,
+          child:
+              Text(hasExistingReview ? 'Ulasan Anda' : 'Tulis sebuah ulasan!'),
+        ),
+        Align(
+          alignment: Alignment.center,
+          child: _buildStarRating(),
+        ),
         const SizedBox(height: 8),
         _buildReviewInput(),
         const SizedBox(height: 8),
-        _buildSubmitButton(),
+        Align(
+          alignment: Alignment.center,
+          child: _buildSubmitButton(),
+        ),
       ],
     );
   }

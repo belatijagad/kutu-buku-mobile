@@ -24,6 +24,7 @@ class _DetailScreenState extends State<DetailScreen> {
   final int itemsPerPage = 10;
   int currentPage = 1;
   String _username = '';
+  bool _isSuperUser = false;
   late Future<List<dynamic>> _reviewsFuture;
 
   List<int> displayedChapters = [];
@@ -66,9 +67,14 @@ class _DetailScreenState extends State<DetailScreen> {
 
     if (response['statusCode'] == 200) {
       updateReviews();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Berhasil menghapus ulasan."),
+        ),
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to delete review')),
+        const SnackBar(content: Text('Gagal untuk menghapus ulasan.')),
       );
     }
   }
@@ -84,23 +90,24 @@ class _DetailScreenState extends State<DetailScreen> {
     final request = context.read<CookieRequest>();
 
     try {
-      final response = await request
-          .get(Constants.updateProgress(widget.book.pk, chapterNumber));
+      if (request.loggedIn) {
+        final response = await request
+            .get(Constants.updateProgress(widget.book.pk, chapterNumber));
 
-      if (response['statusCode'] == 200) {
-        print('Progress updated: ${response['current_chapter']}');
-      } else {
-        print('Failed to update progress: ${response.statusCode}');
+        if (response['statusCode'] == 200) {
+          print('Progress updated: ${response['current_chapter']}');
+        } else {
+          print('Failed to update progress: ${response.statusCode}');
+        }
       }
     } catch (e) {
-      print('Error updating progress: $e');
+      // print('Error updating progress: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final bookField = widget.book.fields;
-
     List<Widget> genreWidgets = bookField.genre
         .map<Widget>((genre) => Chip(
               label: Text(genre),
@@ -157,6 +164,7 @@ class _DetailScreenState extends State<DetailScreen> {
             {
               setState(() {
                 _username = value['username'];
+                _isSuperUser = value['is_superuser'];
               })
             }
         },
@@ -180,17 +188,6 @@ class _DetailScreenState extends State<DetailScreen> {
                         width: 120,
                         height: 180,
                         fit: BoxFit.cover,
-                      ),
-                      const Positioned(
-                        top: 0,
-                        right: 0,
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Icon(
-                            Icons.bookmark,
-                            color: Colors.teal,
-                          ),
-                        ),
                       ),
                     ],
                   ),
@@ -219,17 +216,27 @@ class _DetailScreenState extends State<DetailScreen> {
                               }
                             }),
                             Text(
-                                '${((bookField.averageScore / 20.0).toStringAsFixed(2))}/5.0'),
+                              '${((bookField.averageScore / 20.0).toStringAsFixed(2))}/5.0',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontFamily: 'Montserrat',
+                              ),
+                            ),
                           ]),
                           Text(
                             bookField.title,
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
+                              fontFamily: 'Montserrat',
                             ),
                           ),
                           Text(
                             bookField.author ?? bookField.user ?? '',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontFamily: 'Montserrat',
+                            ),
                           ),
                         ],
                       ),
@@ -237,9 +244,24 @@ class _DetailScreenState extends State<DetailScreen> {
                   ),
                 ],
               ),
+              Divider(
+                color: Colors.grey.shade300,
+                height: 32,
+                thickness: 1,
+                indent: 0, // No padding on the left
+                endIndent: 0, // No padding on the right
+              ),
               Column(
                 children: [
-                  const Text('Genre'),
+                  const Text(
+                    'Genre',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Montserrat',
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   Wrap(
                     alignment: WrapAlignment.center,
                     spacing: 12.0,
@@ -248,20 +270,47 @@ class _DetailScreenState extends State<DetailScreen> {
                   ),
                 ],
               ),
+              Divider(
+                color: Colors.grey.shade300,
+                height: 32,
+                thickness: 1,
+                indent: 0, // No padding on the left
+                endIndent: 0, // No padding on the right
+              ),
               Column(
                 children: [
-                  const Text('Synopsis'),
+                  const Text(
+                    'Synopsis',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Montserrat',
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   Text(
                     bookField.synopsis,
                   ),
                 ],
               ),
+              Divider(
+                color: Colors.grey.shade300,
+                height: 32,
+                thickness: 1,
+                indent: 0, // No padding on the left
+                endIndent: 0, // No padding on the right
+              ),
               Column(
                 children: [
                   const Text(
                     'Chapters',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Montserrat',
+                    ),
                   ),
+                  const SizedBox(height: 8),
                   _buildChapterGrid(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -273,7 +322,7 @@ class _DetailScreenState extends State<DetailScreen> {
                             : null,
                       ),
                       Text(
-                          'Page $currentPage of ${(bookField.chapters / itemsPerPage).ceil()}'),
+                          'Halaman $currentPage dari ${(bookField.chapters / itemsPerPage).ceil()}'),
                       IconButton(
                         icon: const Icon(Icons.arrow_forward),
                         onPressed: currentPage <
@@ -285,18 +334,34 @@ class _DetailScreenState extends State<DetailScreen> {
                   ),
                 ],
               ),
+              Divider(
+                color: Colors.grey.shade300,
+                height: 32,
+                thickness: 1,
+                indent: 0,
+                endIndent: 0,
+              ),
               Column(
                 children: [
-                  const Text('Reviews'),
+                  const Text(
+                    'Ulasan Pembaca',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Montserrat',
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   ReviewForm(
                     bookId: widget.book.pk,
                     currentUser: _username,
                     onReviewSubmitted: updateReviews,
                     onReviewDeleted: deleteReview,
                   ),
+                  const SizedBox(height: 16),
                   ReviewList(
                     bookId: widget.book.pk,
-                    currentUser: _username,
+                    isSuperUser: _isSuperUser,
                     onReviewDeleted: deleteReview,
                     reviewsFuture: _reviewsFuture,
                   ),

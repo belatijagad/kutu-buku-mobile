@@ -39,11 +39,12 @@ class SearchBarWidget extends StatelessWidget {
         child: Column(
           children: [
             const Text(
-              'Mau baca buku apa hari ini?',
+              'Mau baca apa hari ini?',
               style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Montserrat'),
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Montserrat',
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),

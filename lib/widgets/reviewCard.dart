@@ -11,6 +11,7 @@ class ReviewCard extends StatefulWidget {
   final int rating;
   final int reviewId;
   final VoidCallback onDelete;
+  final bool isSuperUser;
 
   const ReviewCard({
     Key? key,
@@ -21,6 +22,7 @@ class ReviewCard extends StatefulWidget {
     required this.rating,
     required this.onDelete,
     required this.reviewId,
+    required this.isSuperUser,
   }) : super(key: key);
 
   @override
@@ -40,22 +42,24 @@ class _ReviewCardState extends State<ReviewCard> {
 
   void getVoteStatus() async {
     final request = context.read<CookieRequest>();
-    final response =
-        await request.get(Constants.getVoteStatus(widget.reviewId));
-    if (response['voteStatus'] == 'upvote') {
-      setState(() {
-        voteStatus = 1;
-      });
-    } else if (response['voteStatus'] == 'downvote') {
-      setState(() {
-        voteStatus = -1;
-      });
-    }
+    try {
+      final response =
+          await request.get(Constants.getVoteStatus(widget.reviewId));
+      if (response['voteStatus'] == 'upvote') {
+        setState(() {
+          voteStatus = 1;
+        });
+      } else if (response['voteStatus'] == 'downvote') {
+        setState(() {
+          voteStatus = -1;
+        });
+      }
+    } catch (e) {}
   }
 
   void _upvote() async {
     final request = context.read<CookieRequest>();
-    if (request.loggedIn) {
+    try {
       final response =
           await request.get(Constants.upvoteReview(widget.reviewId));
       if (response['status'] == 'success') {
@@ -68,12 +72,12 @@ class _ReviewCardState extends State<ReviewCard> {
           voteStatus = 1;
         });
       }
-    }
+    } catch (e) {}
   }
 
   void _downvote() async {
     final request = context.read<CookieRequest>();
-    if (request.loggedIn) {
+    try {
       final response =
           await request.get(Constants.downvoteReview(widget.reviewId));
       if (response['status'] == 'success') {
@@ -86,13 +90,13 @@ class _ReviewCardState extends State<ReviewCard> {
           voteStatus = -1;
         });
       }
-    }
+    } catch (e) {}
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(8), // Add some padding to the container
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -156,17 +160,19 @@ class _ReviewCardState extends State<ReviewCard> {
               ),
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(widget.comment),
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: () {
-                // TODO: Implement report functionality
-              },
-              child: Text('Report', style: TextStyle(color: Colors.grey)),
-            ),
-          ),
+          if (widget.isSuperUser)
+            Align(
+                alignment: Alignment.centerRight,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.delete,
+                    color: Colors.red,
+                    size: 16,
+                  ),
+                  onPressed: widget.onDelete,
+                )),
         ],
       ),
     );

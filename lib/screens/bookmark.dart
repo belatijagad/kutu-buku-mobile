@@ -135,7 +135,9 @@ class _SearchBookScreenState extends State<BookmarkScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text('Daftar Membaca'),
+      ),
       body: Container(
         color: const Color.fromARGB(65, 59, 237, 184),
         child: Column(

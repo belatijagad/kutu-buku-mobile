@@ -17,7 +17,6 @@ class _AddBookScreenState extends State<AddBookScreen> {
   final TextEditingController _chaptersController = TextEditingController();
   final TextEditingController _imgSrcController = TextEditingController();
   final TextEditingController _synopsisController = TextEditingController();
-  // Assuming genres are entered as comma-separated values
   final TextEditingController _genresController = TextEditingController();
 
   Future<void> _submitBook() async {
@@ -54,7 +53,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Add a Book')),
+      appBar: AppBar(title: Text('Tambah Buku')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -63,42 +62,42 @@ class _AddBookScreenState extends State<AddBookScreen> {
             children: <Widget>[
               TextFormField(
                 controller: _titleController,
-                decoration: InputDecoration(labelText: 'Title'),
+                decoration: InputDecoration(labelText: 'Judul'),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Please enter a title';
+                    return 'Tolong isi judulnya!';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _chaptersController,
-                decoration: InputDecoration(labelText: 'Chapters'),
+                decoration: InputDecoration(labelText: 'Jumlah chapter'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Please enter the number of chapters';
+                    return 'Tolong isi jumlah chapter yang tersedia!';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _imgSrcController,
-                decoration: InputDecoration(labelText: 'Image URL'),
+                decoration: InputDecoration(labelText: 'URL gambar'),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Please enter an image URL';
+                    return 'Tolong isi URL dari tampilan depan buku!';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _synopsisController,
-                decoration: InputDecoration(labelText: 'Synopsis'),
+                decoration: InputDecoration(labelText: 'Sinopsis'),
                 maxLines: 5,
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Please enter a synopsis';
+                    return 'Tolong isi sinopsis bukunya!';
                   }
                   return null;
                 },
@@ -109,14 +108,14 @@ class _AddBookScreenState extends State<AddBookScreen> {
                     InputDecoration(labelText: 'Genres (comma-separated)'),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Please enter genres';
+                    return 'Tolong masukkan genre!';
                   }
                   return null;
                 },
               ),
               ElevatedButton(
                 onPressed: _submitBook,
-                child: Text('Submit Book'),
+                child: Text('Tambahkan Buku'),
               ),
             ],
           ),
