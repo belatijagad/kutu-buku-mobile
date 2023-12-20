@@ -1,4 +1,5 @@
 [![Build status](https://build.appcenter.ms/v0.1/apps/2748192e-a435-4742-9eee-80e3e6502f3e/branches/main/badge)](https://appcenter.ms)
+[Download APK](https://install.appcenter.ms/users/belatijagad/apps/kutubuku/distribution_groups/public)
 # kutu-buku-mobile
 ## Anggota Kelompok
 - Alden Luthfi Arrahman
